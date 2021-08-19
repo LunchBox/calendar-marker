@@ -43,7 +43,7 @@
             @click="toggleDate(d)"
           >
             <span v-if="d.getDate() === 1" class="month-mark">
-              {{ d.getMonthName() }}
+              {{ monthName(d) }}
             </span>
             {{ d.getDate() }}
           </span>
@@ -93,14 +93,26 @@ const HOLIDAYS = {
 };
 
 // https://stackoverflow.com/questions/47232534/how-to-get-a-list-of-month-names-in-javascript-using-intl
-Date.prototype.getMonthName = function (locale, format) {
+function getMonthName(date, locale, format) {
   if (!locale) locale = navigator.language;
   if (!format) format = "short";
   const f1 = new Intl.DateTimeFormat(locale, { month: format }).format;
-  const f2 = (m) => f1(new Date(Date.UTC(this.getFullYear(), m)));
+  const f2 = (m) => f1(new Date(Date.UTC(date.getFullYear(), m)));
   const marks = [...Array(12).keys()].map(f2);
-  return marks[this.getMonth()];
-};
+  return marks[date.getMonth()];
+}
+
+function toDay(date) {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
+}
+
+function fDate(date) {
+  return [
+    date.getFullYear(),
+    ("0" + (date.getMonth() + 1)).slice(-2),
+    ("0" + date.getDate()).slice(-2),
+  ].join("-");
+}
 
 function firstDayOfMonth(date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -154,6 +166,10 @@ export default {
       return getDatesBetweenDates(fd, ed);
     });
 
+    const monthName = computed(() => {
+      return (date) => getMonthName(date);
+    });
+
     const dayClass = computed(() => {
       return (date) => {
         let cs = ["day", `w${date.getDay()}`, `m${date.getMonth() % 2}`];
@@ -183,13 +199,6 @@ export default {
     });
 
     // methods
-    const fDate = (date) => {
-      return [
-        date.getFullYear(),
-        ("0" + (date.getMonth() + 1)).slice(-2),
-        ("0" + date.getDate()).slice(-2),
-      ].join("-");
-    };
 
     const toggleDate = (date) => {
       if (state.editMode) {
@@ -245,23 +254,24 @@ export default {
         });
     };
 
-    const baseDateStr = "2021-01-01";
-    const baseDate = new Date(baseDateStr);
-    const date2Diff = (dStr) => (new Date(dStr) - baseDate) / 3600 / 24 / 1000;
+    const base = "2021-01-01";
+    const date2Diff = (dStr) =>
+      (new Date(dStr) - new Date(base)) / 3600 / 24 / 1000;
     const diff2Date = (diff) => {
-      let d = new Date(baseDateStr);
+      let d = new Date(base);
       d.setDate(d.getDate() + diff);
       return d;
     };
 
     const saveToUrl = () => {
       let ds = state.selectedDates.map(date2Diff);
-      let m = Math.min(...ds);
+      let m = ds.length > 0 ? Math.min(...ds) : date2Diff(startDate.value);
       let d = reactive({
         m,
-        ds: ds.map((d) => d - m),
         s: date2Diff(startDate.value) - m,
         e: date2Diff(endDate.value) - m,
+        ds: ds.map((d) => d - m),
+        em: state.editMode ? 1 : 0,
       });
       console.log(JSON.stringify(d));
       window.location.hash = LZString.compressToBase64(JSON.stringify(d));
@@ -274,10 +284,11 @@ export default {
       if (b64 && b64.trim() !== "") {
         const data = JSON.parse(LZString.decompressFromBase64(b64.slice(1)));
         console.log(data);
-        let { ds, m, s, e } = data;
-        state.selectedDates = ds.map((d) => fDate(diff2Date(d + m)));
+        let { m, s, e, ds, em } = data;
         state.sDate = diff2Date(s + m);
         state.eDate = diff2Date(e + m);
+        state.selectedDates = ds.map((d) => fDate(diff2Date(d + m)));
+        state.editMode = em === 1;
       }
     });
 
@@ -290,6 +301,7 @@ export default {
       dayClass,
       dayTitle,
       weekdays, // calendar header
+      monthName,
       preappendMonth,
       prereduceMonth,
       appendMonth,
