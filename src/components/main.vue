@@ -102,10 +102,6 @@ function getMonthName(date, locale, format) {
   return marks[date.getMonth()];
 }
 
-function toDay(date) {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate());
-}
-
 function fDate(date) {
   return [
     date.getFullYear(),
