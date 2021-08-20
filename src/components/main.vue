@@ -1,10 +1,8 @@
 <template>
   <div>
-    <div>
+    <div class="site-name">
       Calendar Marker
-      <sub style="font-weight: normal; font-size: small; color: #999"
-        >v0.1 beta</sub
-      >
+      <sub>v0.1 beta</sub>
     </div>
     <div>
       <input
@@ -73,7 +71,13 @@
           <li v-for="d in selectedDates.sort()" :key="d">{{ d }}</li>
         </ul>
 
-        <button @click="selectedDates.splice(0)">Clear</button>
+        <button @click="clearState">Clear</button>
+        <button @click="exportICal">Export</button>
+
+        <div style="margin-top: 2em">
+          <h4>Import from ICal file.</h4>
+          <input type="file" @change="importICal" />
+        </div>
       </div>
     </div>
 
@@ -89,6 +93,7 @@ import { ref, toRefs, reactive, computed, watch, onMounted } from "vue";
 import domtoimage from "dom-to-image";
 import LZString from "lz-string";
 import { saveAs } from "file-saver";
+import ICAL from "ical.js";
 
 const HOLIDAYS = {
   "2021-09-22": "中秋節翌日",
@@ -155,6 +160,13 @@ export default {
       editMode: true,
     });
 
+    const clearState = () => {
+      state.title = "";
+      state.sDate = today;
+      state.eDate = lastDayOfMonth(today);
+      state.selectedDates.splice(0);
+    };
+
     // computed
     const startDate = computed({
       get: () => fDate(state.sDate),
@@ -208,7 +220,6 @@ export default {
     });
 
     // methods
-
     const toggleDate = (date) => {
       if (state.editMode) {
         let ds = state.selectedDates;
@@ -263,6 +274,51 @@ export default {
         });
     };
 
+    const exportICal = () => {
+      const comp = new ICAL.Component(["vcalendar", [], []]);
+
+      state.selectedDates.forEach((dStr) => {
+        const vevent = new ICAL.Component("vevent");
+        const event = new ICAL.Event(vevent);
+        event.summary = state.title;
+        // event.uid = "abcdef...";
+        event.startDate = ICAL.Time.fromDateString(dStr);
+        comp.addSubcomponent(vevent);
+      });
+
+      const blob = new Blob([comp.toString()], {
+        type: "text/plain;charset=utf-8",
+      });
+
+      const fileName = state.title === "" ? "schedule" : state.title;
+      saveAs(blob, `${fileName}.ics`);
+    };
+
+    const importICal = (e) => {
+      let fr = new FileReader();
+      fr.onload = () => {
+        const jcalData = ICAL.parse(fr.result);
+        const comp = new ICAL.Component(jcalData);
+        const es = comp
+          .getAllSubcomponents("vevent")
+          .map((v) => new ICAL.Event(v));
+
+        clearState();
+        if (es[0] && es[0].summary && es[0].summary !== "") {
+          state.title = es[0].summary;
+        }
+        state.selectedDates.splice(0);
+        es.forEach((e) => {
+          state.selectedDates.push(fDate(e.startDate.toJSDate()));
+        });
+        const ds = state.selectedDates.map((dStr) => new Date(dStr));
+        state.sDate = new Date(Math.min(...ds));
+        state.eDate = new Date(Math.max(...ds));
+      };
+
+      fr.readAsText(e.target.files[0]);
+    };
+
     const base = "2021-01-01";
     const date2Diff = (dStr) =>
       (new Date(dStr) - new Date(base)) / 3600 / 24 / 1000;
@@ -305,6 +361,7 @@ export default {
 
     return {
       ...toRefs(state),
+      clearState,
       startDate,
       endDate,
       dates, // all days on calendar
@@ -319,12 +376,20 @@ export default {
       reduceMonth,
       saveToPng,
       snapshot,
+      exportICal,
+      importICal,
     };
   },
 };
 </script>
 
 <style>
+
+.site-name sub {
+  font-weight: normal; 
+  font-size: small; 
+  color: #999;
+}
 
 label span {
   display: block;
@@ -410,6 +475,7 @@ h2 {
   background: var(--active-bg);
   color: #fff;
 }
+
 .day.holiday.active:before {
   content: " ";
   position: absolute;
