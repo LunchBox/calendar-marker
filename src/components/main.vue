@@ -310,11 +310,6 @@ export default {
 </script>
 
 <style>
-html,
-body {
-  font-family: Helvetica, sans-serif;
-  color: #444;
-}
 
 label span {
   display: block;

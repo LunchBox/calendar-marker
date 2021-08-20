@@ -16,6 +16,7 @@ export default {
 body {
   font: 400 16px Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI,
     Helvetica, Arial, sans-serif;
+  line-height: 1.5;
 }
 #app {
   -webkit-font-smoothing: antialiased;
