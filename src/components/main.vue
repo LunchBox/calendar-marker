@@ -139,7 +139,7 @@ export default {
       sDate: today,
       eDate: lastDayOfMonth(today),
       selectedDates: [],
-      editMode: false,
+      editMode: true,
     });
 
     // computed
