@@ -321,10 +321,27 @@ label span {
 }
 
 .calendar {
+  --cell-size: 40px;
+  --white:  rgba(255, 255, 255, 1);
+  --gray-50:  rgba(249, 250, 251, 1);
+  --gray-100:	rgba(243, 244, 246, 1);
+  --gray-200:	rgba(229, 231, 235, 1);
+  --gray-300:	rgba(209, 213, 219, 1);
+  --gray-400:	rgba(156, 163, 175, 1);
+  --gray-500:	rgba(107, 114, 128, 1);
+  --gray-600:	rgba(75, 85, 99, 1);
+  --gray-700:	rgba(55, 65, 81, 1);
+  --gray-800:	rgba(31, 41, 55, 1);
+  --gray-900:	rgba(17, 24, 39, 1);
+
+  --weekend-bg: var(--gray-50);
+  --day-hover-bg: var(--gray-400);
+  --holiday-bg: var(--gray-200);
+  --active-bg: var(--gray-600);
+
+
   display: flex;
   flex-wrap: wrap;
-
-  --cell-size: 40px;
 
   width: calc(var(--cell-size) * 7);
   border: 1px solid #ccc;
@@ -348,23 +365,22 @@ label span {
 }
 
 .day.mark {
-  color: orange;
   border-radius: 0;
 }
 
 .day.w0,
 .day.w6 {
-  background: #f8f8f8;
-  border-top-color: #f8f8f8;
-  border-bottom-color: #f8f8f8;
+  background: var(--weekend-bg);
+  border-top-color: var(--weekend-bg);
+  border-bottom-color: var(--weekend-bg);
 }
 
 .day.holiday {
-  background: #e0ecc3;
+  background: var(--holiday-bg);
 }
 
 .day.active {
-  background: orange;
+  background: var(--active-bg);
   color: #fff;
 }
 .day.holiday.active:before {
@@ -372,13 +388,13 @@ label span {
   position: absolute;
   bottom: 0;
   right: 0;
-  border-color: transparent #e0ecc3 #e0ecc3 transparent;
+  border-color: transparent var(--holiday-bg) var(--holiday-bg) transparent;
   border-width: 5px;
   border-style: solid;
 }
 
 .day:hover {
-  background: #f0f0f0;
+  background: var(--day-hover-bg);
   color: #444;
   cursor: pointer;
 }
@@ -389,7 +405,6 @@ label span {
   left: 0;
 
   font-size: small;
-  color: #999;
 }
 
 </style>
