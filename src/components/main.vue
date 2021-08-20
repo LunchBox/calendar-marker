@@ -1,32 +1,26 @@
 <template>
   <div>
-    <h2>
+    <div>
       Calendar Marker
       <sub style="font-weight: normal; font-size: small; color: #999"
         >v0.1 beta</sub
       >
-    </h2>
-    <div style="display: flex; margin: 2em 0">
+    </div>
+    <div>
+      <input
+        v-if="editMode"
+        type="string"
+        v-model="title"
+        class="title"
+        placeholder="Event Name"
+      />
+      <h2 v-else>{{ title }}</h2>
+    </div>
+    <div style="display: flex">
       <div>
-        <form>
-          <div style="display: flex">
-            <label>
-              <span>Start Date</span>
-              <input type="date" v-model="startDate" />
-            </label>
-            <label>
-              <span>End Date</span>
-              <input type="date" v-model="endDate" />
-            </label>
-          </div>
-        </form>
         <div style="margin: 0.5em 0">
           <button @click="prereduceMonth">-1 Month</button>
           <button @click="preappendMonth">+1 Month</button>
-          <label>
-            <input type="checkbox" v-model="editMode" />
-            Edit
-          </label>
         </div>
         <div class="calendar">
           <span
@@ -57,6 +51,23 @@
         </div>
       </div>
       <div style="margin-left: 2em">
+        <div style="display: flex">
+          <label>
+            <span>Start Date</span>
+            <input type="date" v-model="startDate" />
+          </label>
+          <label>
+            <span>End Date</span>
+            <input type="date" v-model="endDate" />
+          </label>
+        </div>
+        <div style="margin: 1em 0">
+          <label>
+            <input type="checkbox" v-model="editMode" />
+            Edit
+          </label>
+        </div>
+
         <div>Dates: {{ selectedDates.length }}</div>
         <ul>
           <li v-for="d in selectedDates.sort()" :key="d">{{ d }}</li>
@@ -136,6 +147,8 @@ export default {
   setup() {
     const today = new Date();
     const state = reactive({
+      title: "",
+      ttInput: null,
       sDate: today,
       eDate: lastDayOfMonth(today),
       selectedDates: [],
@@ -263,6 +276,7 @@ export default {
       let ds = state.selectedDates.map(date2Diff);
       let m = ds.length > 0 ? Math.min(...ds) : date2Diff(startDate.value);
       let d = reactive({
+        t: state.title,
         m,
         s: date2Diff(startDate.value) - m,
         e: date2Diff(endDate.value) - m,
@@ -280,7 +294,8 @@ export default {
       if (b64 && b64.trim() !== "") {
         const data = JSON.parse(LZString.decompressFromBase64(b64.slice(1)));
         console.log(data);
-        let { m, s, e, ds, em } = data;
+        let { m, s, e, ds, em, t } = data;
+        state.title = t;
         state.sDate = diff2Date(s + m);
         state.eDate = diff2Date(e + m);
         state.selectedDates = ds.map((d) => fDate(diff2Date(d + m)));
@@ -313,6 +328,23 @@ export default {
 
 label span {
   display: block;
+}
+
+h2,input.title {
+  display: block;
+  width: 100%;
+  
+  max-width: 640px;
+  padding: 0 4px;
+  margin: 1em 0;
+  border: 1px solid #ccc;
+  color: #2c3e50;
+  font: 700 16pt Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
+  line-height: 24pt;
+  height: 24pt;
+}
+h2 {
+  border: 1px solid transparent;
 }
 
 .calendar {
