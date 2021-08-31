@@ -1,26 +1,7 @@
 <template>
   <div>
-    <div class="site-name">
-      Calendar Marker
-      <sub>v0.1 beta</sub>
-    </div>
-    <div>
-      <input
-        v-if="editMode"
-        type="string"
-        v-model="title"
-        class="title"
-        placeholder="Event Name"
-      />
-      <h2 v-else>{{ title }}</h2>
-    </div>
     <div style="display: flex">
       <div>
-        <div style="margin: 0.5em 0">
-          <button @click="prereduceMonth">-1 Month</button>
-          <button @click="preappendMonth">+1 Month</button>
-        </div>
-
         <div class="calendar-wrapper">
           <div class="calendar-header">{{ title }}</div>
           <div class="calendar">
@@ -44,48 +25,66 @@
             </span>
           </div>
         </div>
-
-        <div style="margin: 0.5em 0">
-          <button @click="reduceMonth">-1 Month</button>
-          <button @click="appendMonth">+1 Month</button>
-          <button @click="saveToPng">Download</button>
-          <button @click="snapshot">Snapshot</button>
-        </div>
+        <section>
+          <div>Dates: {{ selectedDates.length }}</div>
+          <ul>
+            <li v-for="d in selectedDates.sort()" :key="d">{{ d }}</li>
+          </ul>
+        </section>
       </div>
       <div style="margin-left: 2em">
-        <div style="display: flex">
+        <div class="site-name">
+          <a href="/" target="_blank">Calendar Marker</a>
+          <sub>v0.1 beta</sub>
+        </div>
+
+        <section>
+          <label>
+            <input type="checkbox" v-model="editMode" />
+            Edit Mode
+          </label>
+        </section>
+
+        <section>
+          <label>
+            <span>Title</span>
+            <textarea
+              v-model="title"
+              class="title"
+              placeholder="Event Name"
+            ></textarea>
+          </label>
           <label>
             <span>Start Date</span>
+            <button @click="preappendMonth">&lt; 1M</button>
             <input type="date" v-model="startDate" />
+            <button @click="prereduceMonth">&gt; 1M</button>
           </label>
           <label>
             <span>End Date</span>
+            <button @click="reduceMonth">&lt; 1M</button>
             <input type="date" v-model="endDate" />
+            <button @click="appendMonth">&gt; 1M</button>
           </label>
-        </div>
-        <div style="margin: 1em 0">
-          <label>
-            <input type="checkbox" v-model="editMode" />
-            Edit
-          </label>
-        </div>
+        </section>
 
-        <div>Dates: {{ selectedDates.length }}</div>
-        <ul>
-          <li v-for="d in selectedDates.sort()" :key="d">{{ d }}</li>
-        </ul>
-
-        <button @click="clearState">Clear</button>
-        <button @click="exportICal">Export</button>
-
-        <div style="margin-top: 2em">
+        <section>
           <h4>Import from ICal file.</h4>
           <input type="file" @change="importICal" />
-        </div>
+        </section>
+
+        <section>
+          <div>
+            <button @click="clearState">Clear</button>
+            <button @click="exportICal">Export</button>
+            <button @click="saveToPng">Download</button>
+            <button @click="snapshot">Snapshot</button>
+          </div>
+
+          <div class="snapshot"></div>
+        </section>
       </div>
     </div>
-
-    <div class="snapshot"></div>
   </div>
 </template>
 
@@ -381,11 +380,16 @@ export default {
   color: #999;
 }
 
+.site-name a {
+  color: #2c3e50;
+  text-decoration: none;
+}
+
 label span {
   display: block;
 }
 
-h2,input.title {
+/* h2,input.title {
   display: block;
   width: 100%;
   
@@ -397,9 +401,15 @@ h2,input.title {
   font: 700 16pt Source Sans Pro, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif;
   line-height: 24pt;
   height: 24pt;
-}
+} */
+
 h2 {
   border: 1px solid transparent;
+}
+
+textarea {
+  width: 100%;
+  min-height: 4em;
 }
 
 .calendar-wrapper {
@@ -499,6 +509,10 @@ h2 {
   left: 0;
 
   font-size: small;
+}
+
+section {
+  margin: 1em 0;
 }
 
 .snapshot {
