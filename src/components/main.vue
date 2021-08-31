@@ -21,7 +21,7 @@
               <span v-if="d.getDate() === 1" class="month-mark">
                 {{ monthName(d) }}
               </span>
-              {{ d.getDate() }}
+              <span>{{ d.getDate() }}</span>
             </span>
           </div>
         </div>
@@ -505,10 +505,19 @@ textarea {
 
 .month-mark {
   position: absolute;
-  top: 0;
+  top: -6px;;
   left: 0;
+  right: 0;
 
-  font-size: small;
+  font-size: 12px;
+  text-align: center;
+  transform: scale(.9);
+}
+
+.month-mark + span {
+  font-size: 16pt;
+  font-weight: bold;
+  text-decoration: underline;
 }
 
 section {
