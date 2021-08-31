@@ -96,18 +96,7 @@ import LZString from "lz-string";
 import { saveAs } from "file-saver";
 import ICAL from "ical.js";
 
-const HOLIDAYS = {
-  "2021-09-22": "中秋節翌日",
-  "2021-10-01": "中華人民共和國國慶日",
-  "2021-10-02": "中華人民共和國國慶日翌日",
-  "2021-10-14": "重陽節",
-  "2021-11-02": "追思節",
-  "2021-12-08": "聖母無原罪瞻禮",
-  "2021-12-20": "澳門特別行政區成立紀念日",
-  "2021-12-21": "冬至",
-  "2021-12-24": "聖誕節前日",
-  "2021-12-25": "聖誕節",
-};
+import HOLIDAYS from "./holiday/mo2021";
 
 // https://stackoverflow.com/questions/47232534/how-to-get-a-list-of-month-names-in-javascript-using-intl
 function getMonthName(date, locale, format) {
