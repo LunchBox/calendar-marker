@@ -20,25 +20,29 @@
           <button @click="prereduceMonth">-1 Month</button>
           <button @click="preappendMonth">+1 Month</button>
         </div>
-        <div class="calendar">
-          <span
-            v-for="(mark, idx) in weekdays"
-            :key="mark"
-            :class="['day', 'mark', 'w' + idx]"
-            >{{ mark }}</span
-          >
-          <span
-            v-for="d in dates"
-            :key="d"
-            :class="dayClass(d)"
-            :title="dayTitle(d)"
-            @click="toggleDate(d)"
-          >
-            <span v-if="d.getDate() === 1" class="month-mark">
-              {{ monthName(d) }}
+
+        <div class="calendar-wrapper">
+          <div class="calendar-header">{{ title }}</div>
+          <div class="calendar">
+            <span
+              v-for="(mark, idx) in weekdays"
+              :key="mark"
+              :class="['day', 'mark', 'w' + idx]"
+              >{{ mark }}</span
+            >
+            <span
+              v-for="d in dates"
+              :key="d"
+              :class="dayClass(d)"
+              :title="dayTitle(d)"
+              @click="toggleDate(d)"
+            >
+              <span v-if="d.getDate() === 1" class="month-mark">
+                {{ monthName(d) }}
+              </span>
+              {{ d.getDate() }}
             </span>
-            {{ d.getDate() }}
-          </span>
+          </div>
         </div>
 
         <div style="margin: 0.5em 0">
@@ -81,10 +85,7 @@
       </div>
     </div>
 
-    <div>
-      <div>Snapshot</div>
-      <div class="snapshot"></div>
-    </div>
+    <div class="snapshot"></div>
   </div>
 </template>
 
@@ -259,7 +260,7 @@ export default {
     };
 
     const snapshot = () => {
-      const node = document.querySelector(".calendar");
+      const node = document.querySelector(".calendar-wrapper");
       domtoimage
         .toPng(node)
         .then((dataUrl) => {
@@ -412,6 +413,17 @@ h2 {
   border: 1px solid transparent;
 }
 
+.calendar-wrapper {
+  padding: 4px;
+  width: min-content;
+  border-radius: 4px;
+  background: #fff;
+}
+
+.calendar-header {
+  padding: 4px;
+}
+
 .calendar {
   --cell-size: 40px;
   --white:  rgba(255, 255, 255, 1);
@@ -498,6 +510,16 @@ h2 {
   left: 0;
 
   font-size: small;
+}
+
+.snapshot {
+  margin: 1em 0;
+  border: 1px solid #ccc;
+  width: min-content;
+}
+
+.snapshot img {
+  display: block;
 }
 
 </style>
