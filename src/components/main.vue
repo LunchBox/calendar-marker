@@ -4,7 +4,11 @@
       <div>
         <div class="calendar-wrapper">
           <div class="calendar-header">{{ title }}</div>
-          <Month :dates="dates" :editMode="editMode"></Month>
+          <Months
+            :startDate="sDate"
+            :endDate="eDate"
+            :editMode="editMode"
+          ></Months>
         </div>
 
         <section>
@@ -73,13 +77,13 @@
 <script>
 import { toRefs, reactive, computed, watch, onMounted } from "vue";
 
-import Month from "./Month";
+import Months from "./Months";
 
 import {
   firstDayOfMonth,
   lastDayOfMonth,
   dateOffset,
-  getDatesBetweenDates,
+  getDatesBetween,
   fDate,
 } from "./utils.js";
 
@@ -91,7 +95,7 @@ import useSnapshot from "./useSnapshot.js";
 
 export default {
   components: {
-    Month,
+    Months,
   },
   setup() {
     const today = new Date();
@@ -127,7 +131,7 @@ export default {
 
       let ed = lastDayOfMonth(new Date(state.eDate));
       ed = dateOffset(ed, 6 - ed.getDay());
-      return getDatesBetweenDates(fd, ed);
+      return getDatesBetween(fd, ed);
     });
 
     const preappendMonth = () => {
@@ -301,6 +305,10 @@ textarea {
   border-color: transparent var(--holiday-bg) var(--holiday-bg) transparent;
   border-width: 5px;
   border-style: solid;
+}
+.day.out {
+  background: transparent;
+  text-indent: -9999px;
 }
 
 .day:hover {

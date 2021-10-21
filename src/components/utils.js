@@ -28,11 +28,11 @@ function dateOffset(date, offset) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate() + offset);
 }
 
-function getDatesBetweenDates(startDate, endDate) {
+function getDatesBetween(startDate, endDate) {
   let dates = [];
   const theDate = new Date(startDate);
   while (theDate <= endDate) {
-    dates = [...dates, new Date(theDate)];
+    dates.push(new Date(theDate));
     theDate.setDate(theDate.getDate() + 1);
   }
   return dates;
@@ -44,5 +44,5 @@ export {
   firstDayOfMonth,
   lastDayOfMonth,
   dateOffset,
-  getDatesBetweenDates
+  getDatesBetween
 };

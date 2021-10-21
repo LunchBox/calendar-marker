@@ -1,38 +1,48 @@
 <template>
-  <div class="calendar">
-    <span
-      v-for="(mark, idx) in weekdays"
-      :key="mark"
-      :class="['day', 'mark', 'w' + idx]"
-      >{{ mark }}</span
-    >
-    <span
-      v-for="d in dates"
-      :key="d"
-      :class="dayClass(d)"
-      :title="dayTitle(d)"
-      @click="toggleDate(d)"
-    >
-      <span v-if="d.getDate() === 1" class="month-mark">
-        {{ monthName(d) }}
+  <div>
+    <div>{{ monthLabel }}</div>
+    <div class="calendar">
+      <WeekHeader></WeekHeader>
+      <span
+        v-for="d in dates"
+        :key="d"
+        :class="dayClass(d)"
+        :title="dayTitle(d)"
+        @click="toggle(d)"
+      >
+        <span>{{ d.getDate() }}</span>
       </span>
-      <span>{{ d.getDate() }}</span>
-    </span>
+    </div>
   </div>
 </template>
 
 <script>
 import { computed } from "vue";
 
-import { fDate, getMonthName } from "./utils.js";
+import { dateOffset, getDatesBetween, fDate } from "./utils";
 
 import { isHoliday, dayLabel } from "./useHoliday.js";
-import { toggle, selected } from "./useSelection";
+import { selected, toggle } from "./useSelection";
+
+import WeekHeader from "./WeekHeader";
 
 export default {
-  props: ["editMode", "dates"],
+  props: ["year", "month"],
+  components: {
+    WeekHeader,
+  },
   setup(props) {
-    const weekdays = "SMTWTFS".split("");
+    const firstDay = new Date(props.year, props.month);
+
+    const startDay = dateOffset(firstDay, -firstDay.getDay());
+
+    const lastDay = dateOffset(new Date(props.year, props.month + 1), -1);
+
+    const endDay = dateOffset(lastDay, 6 - lastDay.getDay());
+
+    const dates = getDatesBetween(startDay, endDay);
+
+    const monthLabel = [props.year, props.month].join("-");
 
     const dayClass = computed(() => {
       return (date) => {
@@ -42,6 +52,7 @@ export default {
         cs.push({
           holiday: isHoliday(date),
           active: selected(dStr),
+          out: date.getMonth() !== +props.month,
         });
 
         return cs;
@@ -61,22 +72,12 @@ export default {
       };
     });
 
-    const monthName = computed(() => {
-      return (date) => getMonthName(date);
-    });
-
-    const toggleDate = (date) => {
-      if (props.editMode) {
-        toggle(date);
-      }
-    };
-
     return {
-      weekdays,
+      monthLabel,
+      dates,
       dayClass,
       dayTitle,
-      monthName,
-      toggleDate,
+      toggle,
     };
   },
 };
