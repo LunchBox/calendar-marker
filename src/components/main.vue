@@ -6,6 +6,7 @@
           <div class="calendar-header">{{ title }}</div>
           <Month :dates="dates" :editMode="editMode"></Month>
         </div>
+
         <section>
           <div>Dates: {{ selectedDates.length }}</div>
           <ul>

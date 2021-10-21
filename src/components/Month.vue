@@ -24,9 +24,9 @@
 <script>
 import { computed } from "vue";
 
-import HOLIDAYS from "./holiday/mo2021";
-import { isHoliday, fDate, getMonthName } from "./utils.js";
+import { fDate, getMonthName } from "./utils.js";
 
+import { isHoliday, dayLabel } from "./useHoliday.js";
 import { toggle, selected } from "./useSelection";
 
 export default {
@@ -52,9 +52,11 @@ export default {
       return (date) => {
         const dStr = fDate(date);
         const str = [dStr];
+
         if (isHoliday(date)) {
-          str.push(HOLIDAYS[dStr]);
+          str.push(dayLabel(date));
         }
+
         return str.join(",");
       };
     });

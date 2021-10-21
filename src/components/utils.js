@@ -1,5 +1,3 @@
-import HOLIDAYS from "./holiday/mo2021";
-
 // https://stackoverflow.com/questions/47232534/how-to-get-a-list-of-month-names-in-javascript-using-intl
 function getMonthName(date, locale, format) {
   if (!locale) locale = navigator.language;
@@ -40,16 +38,11 @@ function getDatesBetweenDates(startDate, endDate) {
   return dates;
 }
 
-function isHoliday(date) {
-  return Object.keys(HOLIDAYS).includes(fDate(date));
-}
-
 export {
   getMonthName,
   fDate,
   firstDayOfMonth,
   lastDayOfMonth,
   dateOffset,
-  getDatesBetweenDates,
-  isHoliday
+  getDatesBetweenDates
 };
