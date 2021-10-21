@@ -4,6 +4,7 @@
     :key="m.join('-')"
     :year="m[0]"
     :month="m[1]"
+    :editMode="editMode"
   ></Month>
 </template>
 
@@ -12,7 +13,7 @@ import { computed } from "vue";
 import Month from "./Month";
 
 export default {
-  props: ["startDate", "endDate"],
+  props: ["startDate", "endDate", "editMode"],
   components: {
     Month,
   },

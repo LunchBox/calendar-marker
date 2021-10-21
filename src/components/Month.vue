@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>{{ monthLabel }}</div>
+    <div style="text-align: center">{{ monthLabel }}</div>
     <div class="calendar">
       <WeekHeader></WeekHeader>
       <span
@@ -8,7 +8,7 @@
         :key="d"
         :class="dayClass(d)"
         :title="dayTitle(d)"
-        @click="toggle(d)"
+        @click="toggleDate(d)"
       >
         <span>{{ d.getDate() }}</span>
       </span>
@@ -27,7 +27,7 @@ import { selected, toggle } from "./useSelection";
 import WeekHeader from "./WeekHeader";
 
 export default {
-  props: ["year", "month"],
+  props: ["year", "month", "editMode"],
   components: {
     WeekHeader,
   },
@@ -72,12 +72,18 @@ export default {
       };
     });
 
+    function toggleDate(date) {
+      if (props.editMode) {
+        toggle(date);
+      }
+    }
+
     return {
       monthLabel,
       dates,
       dayClass,
       dayTitle,
-      toggle,
+      toggleDate,
     };
   },
 };

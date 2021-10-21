@@ -279,6 +279,7 @@ textarea {
 
 .day.mark {
   border-radius: 0;
+  height: calc(var(--cell-size) * 0.618);
 }
 
 .day.w0,
