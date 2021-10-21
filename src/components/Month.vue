@@ -19,7 +19,7 @@
 <script>
 import { computed } from "vue";
 
-import { dateOffset, getDatesBetween, fDate } from "./utils";
+import { dateOffset, getDatesBetween, fDate, getMonthName } from "./utils";
 
 import { isHoliday, dayLabel } from "./useHoliday.js";
 import { selected, toggle } from "./useSelection";
@@ -42,7 +42,7 @@ export default {
 
     const dates = getDatesBetween(startDay, endDay);
 
-    const monthLabel = [props.year, props.month].join("-");
+    const monthLabel = getMonthName(firstDay);
 
     const dayClass = computed(() => {
       return (date) => {
