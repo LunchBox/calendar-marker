@@ -1,13 +1,18 @@
 import { fDate } from "./utils.js";
 
-import HOLIDAYS from "./holiday/mo2021";
+import { holidays } from "@/api/holidays";
+
+function getHoliday(date) {
+  return holidays.value.find((item) => item.date === fDate(date));
+}
 
 function isHoliday(date) {
-  return Object.keys(HOLIDAYS).includes(fDate(date));
+  return getHoliday(date);
 }
 
 function dayLabel(date) {
-  return HOLIDAYS[fDate(date)];
+  const day = getHoliday(date);
+  return day ? day.name : null;
 }
 
 export { isHoliday, dayLabel };
